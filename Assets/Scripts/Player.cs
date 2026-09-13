@@ -9,6 +9,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float player_speed = 5f;
     private Rigidbody player_rb;
     private Vector2 player_input;
+    
+    [Header("Laser Stuff")]
+    [SerializeField] private GameObject laser_prefab;
+    [SerializeField] private Transform laser_spawn;
+
 
     private void Awake()
     {
@@ -35,6 +40,8 @@ public class Player : MonoBehaviour
 
         isa.Player.Move.performed += OnMove;
         isa.Player.Move.canceled += OnMove;
+
+        isa.Player.Shoot.performed += OnShoot;
     }
 
     private void OnDisable()
@@ -42,11 +49,19 @@ public class Player : MonoBehaviour
         isa.Player.Move.performed -= OnMove;
         isa.Player.Move.canceled -= OnMove;
 
+        isa.Player.Shoot.performed -= OnShoot;
+
         isa.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
         player_input = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnShoot(InputAction.CallbackContext ctx)
+    {
+        GameObject laser = Instantiate(laser_prefab, laser_spawn.position, Quaternion.identity);
+        laser.GetComponent<Laser>().SetLaserDirection(Vector3.up);
     }
 }
